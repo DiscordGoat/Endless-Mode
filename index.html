@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <title>Tower Defense</title>
+
+  <style>
+    :root {
+      --bg: #050509;
+      --line: rgba(255, 255, 255, 0.84);
+      --line-soft: rgba(255, 255, 255, 0.28);
+      --text: rgba(255, 255, 255, 0.94);
+      --text-soft: rgba(255, 255, 255, 0.58);
+
+      --purple: rgba(143, 79, 255, 0.34);
+      --purple-strong: rgba(156, 86, 255, 0.52);
+
+      --blue: rgba(96, 172, 255, 0.88);
+      --green: rgba(144, 222, 120, 0.9);
+      --red: rgba(255, 66, 62, 0.92);
+
+      --radius: 28px;
+    }
+
+    * {
+      box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
+      user-select: none;
+    }
+
+    html,
+    body {
+      width: 100%;
+      min-height: 100%;
+      margin: 0;
+      background: var(--bg);
+      color: var(--text);
+      font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      overflow: hidden;
+    }
+
+    body {
+      min-height: 100svh;
+      display: grid;
+      place-items: center;
+      background:
+        radial-gradient(circle at 50% -8%, var(--purple-strong), transparent 34%),
+        radial-gradient(circle at 50% 108%, var(--purple), transparent 38%),
+        linear-gradient(180deg, #08080f 0%, #030306 48%, #070711 100%);
+    }
+
+    .screen {
+      position: relative;
+      width: min(100vw, 520px);
+      height: 100svh;
+      min-height: 620px;
+      padding: max(28px, env(safe-area-inset-top)) 28px max(28px, env(safe-area-inset-bottom));
+      display: flex;
+      flex-direction: column;
+      align-items: stretch;
+      justify-content: center;
+      isolation: isolate;
+    }
+
+    .screen::before,
+    .screen::after {
+      content: "";
+      position: absolute;
+      left: 50%;
+      width: 110%;
+      height: 34%;
+      translate: -50% 0;
+      pointer-events: none;
+      z-index: -1;
+      opacity: 0.85;
+    }
+
+    .screen::before {
+      top: -18%;
+      background: radial-gradient(ellipse at center, rgba(151, 87, 255, 0.42), transparent 64%);
+    }
+
+    .screen::after {
+      bottom: -20%;
+      background: radial-gradient(ellipse at center, rgba(117, 58, 255, 0.34), transparent 66%);
+    }
+
+    .menu-card {
+      position: relative;
+      width: 100%;
+      min-height: 78svh;
+      border: 2px solid var(--line);
+      border-radius: var(--radius);
+      padding: clamp(28px, 7vw, 48px);
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-start;
+      background: rgba(0, 0, 0, 0.22);
+      box-shadow:
+        0 0 0 1px rgba(255, 255, 255, 0.03) inset,
+        0 26px 90px rgba(0, 0, 0, 0.52);
+      overflow: hidden;
+    }
+
+    .menu-card::before {
+      content: "";
+      position: absolute;
+      inset: 16px;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: calc(var(--radius) - 10px);
+      pointer-events: none;
+    }
+
+    .title-wrap {
+      margin-top: 20px;
+      margin-bottom: clamp(56px, 12svh, 92px);
+      display: grid;
+      gap: 14px;
+    }
+
+    .eyebrow {
+      color: var(--red);
+      text-transform: uppercase;
+      letter-spacing: 0.22em;
+      font-size: 0.74rem;
+      font-weight: 700;
+    }
+
+    h1 {
+      margin: 0;
+      color: var(--text);
+      font-size: clamp(2.4rem, 14vw, 4.6rem);
+      line-height: 0.92;
+      letter-spacing: -0.075em;
+      font-weight: 800;
+    }
+
+    .subtitle {
+      max-width: 28ch;
+      color: var(--text-soft);
+      font-size: clamp(0.92rem, 3.4vw, 1.05rem);
+      line-height: 1.45;
+    }
+
+    .menu-actions {
+      display: grid;
+      gap: 18px;
+      width: 100%;
+      margin-top: auto;
+      margin-bottom: clamp(26px, 9svh, 82px);
+    }
+
+    .menu-button {
+      appearance: none;
+      position: relative;
+      width: 100%;
+      min-height: 76px;
+      border: 2px solid currentColor;
+      border-radius: 18px;
+      background: transparent;
+      color: var(--line);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 24px;
+      font: inherit;
+      font-size: clamp(1.1rem, 4.5vw, 1.45rem);
+      font-weight: 750;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      cursor: pointer;
+      transition:
+        transform 130ms ease,
+        background 130ms ease,
+        color 130ms ease,
+        border-color 130ms ease;
+    }
+
+    .menu-button::after {
+      content: "";
+      width: 13px;
+      height: 13px;
+      border-right: 2px solid currentColor;
+      border-bottom: 2px solid currentColor;
+      rotate: -45deg;
+      opacity: 0.9;
+    }
+
+    .menu-button.play {
+      color: var(--blue);
+    }
+
+    .menu-button.settings {
+      color: var(--green);
+    }
+
+    .menu-button:active {
+      transform: scale(0.982);
+      background: rgba(255, 255, 255, 0.055);
+    }
+
+    .menu-button:focus-visible {
+      outline: 3px solid rgba(255, 255, 255, 0.34);
+      outline-offset: 4px;
+    }
+
+    .footer-line {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      color: var(--text-soft);
+      font-size: 0.74rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+    }
+
+    .thin-line {
+      flex: 1;
+      height: 1px;
+      margin-left: 14px;
+      background: linear-gradient(90deg, var(--line-soft), transparent);
+    }
+
+    .corner {
+      position: absolute;
+      width: 28px;
+      height: 28px;
+      border-color: var(--line-soft);
+      pointer-events: none;
+    }
+
+    .corner.tl {
+      top: 24px;
+      left: 24px;
+      border-top: 1px solid;
+      border-left: 1px solid;
+    }
+
+    .corner.tr {
+      top: 24px;
+      right: 24px;
+      border-top: 1px solid;
+      border-right: 1px solid;
+    }
+
+    .corner.bl {
+      bottom: 24px;
+      left: 24px;
+      border-bottom: 1px solid;
+      border-left: 1px solid;
+    }
+
+    .corner.br {
+      bottom: 24px;
+      right: 24px;
+      border-bottom: 1px solid;
+      border-right: 1px solid;
+    }
+
+    @media (min-width: 640px) {
+      .screen {
+        padding-block: 40px;
+      }
+
+      .menu-card {
+        min-height: 760px;
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .menu-button {
+        transition: none;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <main class="screen" aria-label="Main menu">
+    <section class="menu-card">
+      <div class="corner tl"></div>
+      <div class="corner tr"></div>
+      <div class="corner bl"></div>
+      <div class="corner br"></div>
+
+      <header class="title-wrap">
+        <div class="eyebrow">Tower Defense</div>
+        <h1>DEFENSE<br />CORE</h1>
+        <p class="subtitle">Clear levels, earn upgrades, tune your loadout, and push toward prestige.</p>
+      </header>
+
+      <nav class="menu-actions" aria-label="Main options">
+        <button class="menu-button play" type="button" data-action="play">Play</button>
+        <button class="menu-button settings" type="button" data-action="settings">Settings</button>
+      </nav>
+
+      <footer class="footer-line">
+        <span>v0.1</span>
+        <span class="thin-line"></span>
+      </footer>
+    </section>
+  </main>
+
+  <script>
+    const buttons = document.querySelectorAll("[data-action]");
+
+    buttons.forEach((button) => {
+      button.addEventListener("click", () => {
+        const action = button.dataset.action;
+
+        if (action === "play") {
+          console.log("Play selected");
+          // Later: route to level selector / shop hub.
+        }
+
+        if (action === "settings") {
+          console.log("Settings selected");
+          // Later: open settings panel.
+        }
+      });
+    });
+  </script>
+</body>
+</html>
