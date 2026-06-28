@@ -817,6 +817,13 @@
   </section>
 
   <script>
+    const TUNING = {
+      mapWidth: 44,
+      mapHeight: 44,
+      roadLength: 150,
+      boulderCount: 88
+    };
+
     const STORAGE_KEY = "defenseCoreSaveV1";
 
     const defaultSave = {
@@ -861,8 +868,8 @@
     const abortContinueButton = document.querySelector("#abortContinueButton");
 
     const map = {
-      cols: 44,
-      rows: 44,
+      cols: TUNING.mapWidth,
+      rows: TUNING.mapHeight,
       cell: 24,
       path: [],
       pathKeys: new Set(),
@@ -1007,7 +1014,14 @@
       camera.y = (window.innerHeight - mapHeight * camera.scale) / 2;
     }
 
+    function syncMapTuning() {
+      map.cols = TUNING.mapWidth;
+      map.rows = TUNING.mapHeight;
+    }
+
     function generateMap() {
+      syncMapTuning();
+
       map.path = [];
       map.pathKeys = new Set();
       map.boulders = [];
@@ -1017,27 +1031,33 @@
     }
 
     function addBouldersFirst() {
-      const attempts = 260;
+      let placed = 0;
+      let attempts = 0;
+      const maxAttempts = TUNING.boulderCount * 12;
 
-      for (let i = 0; i < attempts; i++) {
+      while (placed < TUNING.boulderCount && attempts < maxAttempts) {
+        attempts++;
+
         const w = randomInt(1, 3);
         const h = randomInt(1, 3);
         const x = randomInt(1, map.cols - w - 2);
         const y = randomInt(1, map.rows - h - 2);
 
-        if (map.boulders.some((b) => rectsOverlap(x, y, w, h, b.x, b.y, b.w, b.h))) {
-          continue;
-        }
+        const overlaps = map.boulders.some((b) =>
+          rectsOverlap(x, y, w, h, b.x, b.y, b.w, b.h)
+        );
 
-        if (Math.random() < 0.34) {
-          map.boulders.push({
-            x,
-            y,
-            w,
-            h,
-            shade: randomRange(0.12, 0.22)
-          });
-        }
+        if (overlaps) continue;
+
+        map.boulders.push({
+          x,
+          y,
+          w,
+          h,
+          shade: randomRange(0.12, 0.22)
+        });
+
+        placed++;
       }
     }
 
@@ -1054,21 +1074,43 @@
 
       addPathCell(x, y);
 
-      while (x < map.cols - 1 && map.path.length < 100 && safety < 500) {
+      while (map.path.length < TUNING.roadLength && safety < 3000) {
         safety++;
 
-        const targetProgress = x / (map.cols - 1);
+        const remainingLength = TUNING.roadLength - map.path.length;
+        const remainingX = map.cols - 1 - x;
+
+        const shouldExit =
+          remainingLength <= remainingX + 4 ||
+          map.path.length > TUNING.roadLength * 0.72;
+
+        const targetProgress = shouldExit
+          ? x / Math.max(1, map.cols - 1)
+          : map.path.length / TUNING.roadLength;
+
         const targetY = Math.round(startY + (endY - startY) * targetProgress);
 
         const possibleMoves = [];
 
-        possibleMoves.push({ dx: 1, dy: 0, turnCost: direction === 0 ? 0 : 6 });
-        possibleMoves.push({ dx: 1, dy: -1, turnCost: direction === -1 ? 0 : 9 });
-        possibleMoves.push({ dx: 1, dy: 1, turnCost: direction === 1 ? 0 : 9 });
+        if (shouldExit) {
+          possibleMoves.push({ dx: 1, dy: 0, turnCost: direction === 0 ? 0 : 4 });
+          possibleMoves.push({ dx: 1, dy: -1, turnCost: direction === -1 ? 0 : 8 });
+          possibleMoves.push({ dx: 1, dy: 1, turnCost: direction === 1 ? 0 : 8 });
+        } else {
+          possibleMoves.push({ dx: 1, dy: 0, turnCost: direction === 0 ? 0 : 7 });
+          possibleMoves.push({ dx: 1, dy: -1, turnCost: direction === -1 ? 0 : 10 });
+          possibleMoves.push({ dx: 1, dy: 1, turnCost: direction === 1 ? 0 : 10 });
 
-        if (straightBias <= 0) {
-          possibleMoves.push({ dx: 0, dy: -1, turnCost: direction === -1 ? 1 : 14 });
-          possibleMoves.push({ dx: 0, dy: 1, turnCost: direction === 1 ? 1 : 14 });
+          if (straightBias <= 0) {
+            possibleMoves.push({ dx: 0, dy: -1, turnCost: direction === -1 ? 1 : 13 });
+            possibleMoves.push({ dx: 0, dy: 1, turnCost: direction === 1 ? 1 : 13 });
+
+            if (x > 4 && x < map.cols - 6) {
+              possibleMoves.push({ dx: -1, dy: 0, turnCost: direction === 0 ? 5 : 16 });
+              possibleMoves.push({ dx: -1, dy: -1, turnCost: direction === -1 ? 8 : 18 });
+              possibleMoves.push({ dx: -1, dy: 1, turnCost: direction === 1 ? 8 : 18 });
+            }
+          }
         }
 
         const validMoves = possibleMoves
@@ -1076,19 +1118,40 @@
             const nextX = x + move.dx;
             const nextY = y + move.dy;
 
+            const outOfBounds =
+              nextX < 0 ||
+              nextY < 2 ||
+              nextX >= map.cols ||
+              nextY >= map.rows - 2;
+
+            if (outOfBounds) return null;
+
             const blocked = roadWouldHitBoulder(nextX, nextY);
-            const outOfBounds = nextX < 0 || nextY < 2 || nextX >= map.cols || nextY >= map.rows - 2;
+            if (blocked) return null;
 
-            if (blocked || outOfBounds) return null;
+            const alreadyRoad = map.pathKeys.has(`${nextX},${nextY}`);
 
-            const distanceCost = Math.abs(nextY - targetY) * 2.2;
+            const distanceCost = Math.abs(nextY - targetY) * (shouldExit ? 2.4 : 1.15);
             const turnCost = move.turnCost;
-            const progressBonus = move.dx === 1 ? -8 : 4;
-            const randomNoise = randomRange(0, 2.5);
+            const progressBonus = shouldExit
+              ? move.dx === 1 ? -12 : 10
+              : move.dx === 1 ? -2.6 : move.dx === 0 ? -0.2 : 2.2;
+
+            const revisitCost = alreadyRoad ? 18 : 0;
+            const edgeCost = nextY <= 3 || nextY >= map.rows - 4 ? 8 : 0;
+            const exitPressure = shouldExit ? Math.abs(map.cols - 1 - nextX) * 0.65 : 0;
+            const randomNoise = randomRange(0, 2.2);
 
             return {
               ...move,
-              score: distanceCost + turnCost + progressBonus + randomNoise
+              score:
+                distanceCost +
+                turnCost +
+                progressBonus +
+                revisitCost +
+                edgeCost +
+                exitPressure +
+                randomNoise
             };
           })
           .filter(Boolean)
@@ -1113,26 +1176,47 @@
         }
 
         addPathCell(x, y);
+
+        if (
+          x >= map.cols - 1 &&
+          map.path.length >= TUNING.roadLength * 0.92
+        ) {
+          break;
+        }
       }
 
-      while (map.path.length < 100) {
-        const last = map.path[map.path.length - 1];
-        const gridX = Math.round((last.x - map.cell / 2) / map.cell);
-        const gridY = Math.round((last.y - map.cell / 2) / map.cell);
-
-        const nextX = clamp(gridX + 1, 0, map.cols - 1);
-        const nextY = gridY;
+      while (x < map.cols - 1 && map.path.length < TUNING.roadLength + 24) {
+        const nextX = clamp(x + 1, 0, map.cols - 1);
+        const nextY = y;
 
         if (roadWouldHitBoulder(nextX, nextY)) {
           removeNearbyBoulders(nextX, nextY, 2);
         }
 
-        addPathCell(nextX, nextY);
-
-        if (nextX >= map.cols - 1) break;
+        x = nextX;
+        addPathCell(x, nextY);
       }
 
+      forceExitConnection();
       clearBouldersTouchingRoad();
+    }
+
+    function forceExitConnection() {
+      const last = map.path[map.path.length - 1];
+      if (!last) return;
+
+      let x = Math.round((last.x - map.cell / 2) / map.cell);
+      let y = Math.round((last.y - map.cell / 2) / map.cell);
+
+      while (x < map.cols - 1) {
+        x++;
+
+        if (roadWouldHitBoulder(x, y)) {
+          removeNearbyBoulders(x, y, 2);
+        }
+
+        addPathCell(x, y);
+      }
     }
 
     function addPathCell(x, y) {
