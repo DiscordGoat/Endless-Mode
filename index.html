@@ -2,23 +2,31 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover"
+  />
   <title>Tower Defense</title>
 
   <style>
     :root {
       --bg: #050509;
       --line: rgba(255, 255, 255, 0.84);
-      --line-soft: rgba(255, 255, 255, 0.28);
+      --line-soft: rgba(255, 255, 255, 0.24);
       --text: rgba(255, 255, 255, 0.94);
       --text-soft: rgba(255, 255, 255, 0.58);
 
-      --purple: rgba(143, 79, 255, 0.34);
+      --purple-glow: rgba(143, 79, 255, 0.34);
       --purple-strong: rgba(156, 86, 255, 0.52);
 
       --blue: rgba(96, 172, 255, 0.88);
       --green: rgba(144, 222, 120, 0.9);
       --red: rgba(255, 66, 62, 0.92);
+      --yellow: rgba(255, 215, 89, 0.94);
+      --emerald: rgba(30, 230, 150, 0.92);
+      --gold: rgba(255, 182, 54, 0.95);
+      --purple: rgba(177, 102, 255, 0.95);
+      --gray: rgba(170, 176, 188, 0.92);
 
       --radius: 28px;
     }
@@ -27,6 +35,7 @@
       box-sizing: border-box;
       -webkit-tap-highlight-color: transparent;
       user-select: none;
+      touch-action: manipulation;
     }
 
     html,
@@ -38,6 +47,7 @@
       color: var(--text);
       font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
       overflow: hidden;
+      overscroll-behavior: none;
     }
 
     body {
@@ -46,8 +56,12 @@
       place-items: center;
       background:
         radial-gradient(circle at 50% -8%, var(--purple-strong), transparent 34%),
-        radial-gradient(circle at 50% 108%, var(--purple), transparent 38%),
+        radial-gradient(circle at 50% 108%, var(--purple-glow), transparent 38%),
         linear-gradient(180deg, #08080f 0%, #030306 48%, #070711 100%);
+    }
+
+    button {
+      font: inherit;
     }
 
     .screen {
@@ -86,16 +100,15 @@
       background: radial-gradient(ellipse at center, rgba(117, 58, 255, 0.34), transparent 66%);
     }
 
-    .menu-card {
+    .panel {
       position: relative;
       width: 100%;
       min-height: 78svh;
       border: 2px solid var(--line);
       border-radius: var(--radius);
-      padding: clamp(28px, 7vw, 48px);
+      padding: clamp(24px, 6vw, 42px);
       display: flex;
       flex-direction: column;
-      justify-content: flex-start;
       background: rgba(0, 0, 0, 0.22);
       box-shadow:
         0 0 0 1px rgba(255, 255, 255, 0.03) inset,
@@ -103,7 +116,7 @@
       overflow: hidden;
     }
 
-    .menu-card::before {
+    .panel::before {
       content: "";
       position: absolute;
       inset: 16px;
@@ -111,6 +124,55 @@
       border-radius: calc(var(--radius) - 10px);
       pointer-events: none;
     }
+
+    .corner {
+      position: absolute;
+      width: 28px;
+      height: 28px;
+      border-color: var(--line-soft);
+      pointer-events: none;
+    }
+
+    .corner.tl {
+      top: 24px;
+      left: 24px;
+      border-top: 1px solid;
+      border-left: 1px solid;
+    }
+
+    .corner.tr {
+      top: 24px;
+      right: 24px;
+      border-top: 1px solid;
+      border-right: 1px solid;
+    }
+
+    .corner.bl {
+      bottom: 24px;
+      left: 24px;
+      border-bottom: 1px solid;
+      border-left: 1px solid;
+    }
+
+    .corner.br {
+      bottom: 24px;
+      right: 24px;
+      border-bottom: 1px solid;
+      border-right: 1px solid;
+    }
+
+    .view {
+      display: none;
+      height: 100%;
+      flex: 1;
+    }
+
+    .view.active {
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* MAIN MENU */
 
     .title-wrap {
       margin-top: 20px;
@@ -164,7 +226,6 @@
       align-items: center;
       justify-content: space-between;
       padding: 0 24px;
-      font: inherit;
       font-size: clamp(1.1rem, 4.5vw, 1.45rem);
       font-weight: 750;
       letter-spacing: 0.08em;
@@ -172,9 +233,7 @@
       cursor: pointer;
       transition:
         transform 130ms ease,
-        background 130ms ease,
-        color 130ms ease,
-        border-color 130ms ease;
+        background 130ms ease;
     }
 
     .menu-button::after {
@@ -195,14 +254,11 @@
       color: var(--green);
     }
 
-    .menu-button:active {
+    .menu-button:active,
+    .game-button:active,
+    .back-button:active {
       transform: scale(0.982);
       background: rgba(255, 255, 255, 0.055);
-    }
-
-    .menu-button:focus-visible {
-      outline: 3px solid rgba(255, 255, 255, 0.34);
-      outline-offset: 4px;
     }
 
     .footer-line {
@@ -222,54 +278,158 @@
       background: linear-gradient(90deg, var(--line-soft), transparent);
     }
 
-    .corner {
-      position: absolute;
-      width: 28px;
-      height: 28px;
-      border-color: var(--line-soft);
-      pointer-events: none;
+    /* GAME MENU */
+
+    .status-bar {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 8px;
+      margin-bottom: 24px;
+      color: var(--line);
     }
 
-    .corner.tl {
-      top: 24px;
-      left: 24px;
-      border-top: 1px solid;
-      border-left: 1px solid;
+    .status-item {
+      min-height: 48px;
+      border: 1px solid var(--line-soft);
+      border-radius: 13px;
+      display: grid;
+      place-items: center;
+      text-align: center;
+      font-size: clamp(0.68rem, 2.8vw, 0.82rem);
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      background: rgba(255, 255, 255, 0.025);
     }
 
-    .corner.tr {
-      top: 24px;
-      right: 24px;
-      border-top: 1px solid;
-      border-right: 1px solid;
+    .samurai-wrap {
+      display: grid;
+      place-items: center;
+      margin-top: 8px;
+      margin-bottom: 30px;
     }
 
-    .corner.bl {
-      bottom: 24px;
-      left: 24px;
-      border-bottom: 1px solid;
-      border-left: 1px solid;
+    .samurai-icon {
+      width: min(48vw, 210px);
+      height: auto;
+      color: rgba(255, 255, 255, 0.9);
+      filter: drop-shadow(0 0 18px rgba(177, 102, 255, 0.18));
     }
 
-    .corner.br {
-      bottom: 24px;
-      right: 24px;
-      border-bottom: 1px solid;
-      border-right: 1px solid;
+    .game-actions {
+      display: grid;
+      gap: 13px;
+      margin-top: 2px;
     }
 
-    @media (min-width: 640px) {
-      .screen {
-        padding-block: 40px;
+    .game-button,
+    .back-button {
+      appearance: none;
+      width: 100%;
+      min-height: 58px;
+      border: 2px solid currentColor;
+      border-radius: 16px;
+      background: transparent;
+      color: var(--line);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 20px;
+      font-size: clamp(0.92rem, 3.7vw, 1.12rem);
+      font-weight: 850;
+      letter-spacing: 0.095em;
+      text-transform: uppercase;
+      cursor: pointer;
+      transition:
+        transform 130ms ease,
+        background 130ms ease;
+    }
+
+    .game-button::after {
+      content: "";
+      width: 10px;
+      height: 10px;
+      border-right: 2px solid currentColor;
+      border-bottom: 2px solid currentColor;
+      rotate: -45deg;
+      opacity: 0.9;
+    }
+
+    .game-button.level {
+      color: var(--red);
+    }
+
+    .game-button.shop {
+      color: var(--yellow);
+    }
+
+    .game-button.gems {
+      color: var(--emerald);
+    }
+
+    .game-button.crates {
+      color: var(--gold);
+    }
+
+    .game-button.abilities {
+      color: var(--purple);
+    }
+
+    .game-button.towers {
+      color: var(--gray);
+    }
+
+    .bottom-back {
+      margin-top: auto;
+      padding-top: 20px;
+    }
+
+    .back-button {
+      color: var(--line);
+      min-height: 54px;
+    }
+
+    .back-button::before {
+      content: "";
+      width: 10px;
+      height: 10px;
+      border-left: 2px solid currentColor;
+      border-bottom: 2px solid currentColor;
+      rotate: 45deg;
+      opacity: 0.9;
+    }
+
+    .back-button span {
+      margin-left: auto;
+    }
+
+    @media (max-height: 740px) {
+      .panel {
+        min-height: 88svh;
+        padding: 22px;
       }
 
-      .menu-card {
-        min-height: 760px;
+      .samurai-wrap {
+        margin-bottom: 18px;
+      }
+
+      .samurai-icon {
+        width: min(34vw, 150px);
+      }
+
+      .game-actions {
+        gap: 9px;
+      }
+
+      .game-button {
+        min-height: 50px;
       }
     }
 
     @media (prefers-reduced-motion: reduce) {
-      .menu-button {
+      .menu-button,
+      .game-button,
+      .back-button {
         transition: none;
       }
     }
@@ -277,48 +437,233 @@
 </head>
 
 <body>
-  <main class="screen" aria-label="Main menu">
-    <section class="menu-card">
+  <main class="screen" aria-label="Tower Defense Interface">
+    <section class="panel">
       <div class="corner tl"></div>
       <div class="corner tr"></div>
       <div class="corner bl"></div>
       <div class="corner br"></div>
 
-      <header class="title-wrap">
-        <div class="eyebrow">Tower Defense</div>
-        <h1>DEFENSE<br />CORE</h1>
-        <p class="subtitle">Clear levels, earn upgrades, tune your loadout, and push toward prestige.</p>
-      </header>
+      <!-- MAIN MENU -->
+      <div class="view active" id="mainMenu">
+        <header class="title-wrap">
+          <div class="eyebrow">Tower Defense</div>
+          <h1>DEFENSE<br />CORE</h1>
+          <p class="subtitle">Clear levels, earn upgrades, tune your loadout, and push toward prestige.</p>
+        </header>
 
-      <nav class="menu-actions" aria-label="Main options">
-        <button class="menu-button play" type="button" data-action="play">Play</button>
-        <button class="menu-button settings" type="button" data-action="settings">Settings</button>
-      </nav>
+        <nav class="menu-actions" aria-label="Main options">
+          <button class="menu-button play" type="button" id="playButton">Play</button>
+          <button class="menu-button settings" type="button">Settings</button>
+        </nav>
 
-      <footer class="footer-line">
-        <span>v0.1</span>
-        <span class="thin-line"></span>
-      </footer>
+        <footer class="footer-line">
+          <span>v0.1</span>
+          <span class="thin-line"></span>
+        </footer>
+      </div>
+
+      <!-- GAME MENU -->
+      <div class="view" id="gameMenu">
+        <header class="status-bar" aria-label="Player resources">
+          <div class="status-item">Tier: I</div>
+          <div class="status-item">Coins: 0</div>
+          <div class="status-item">Gems: 0</div>
+          <div class="status-item">Crates: 0</div>
+        </header>
+
+        <div class="samurai-wrap" aria-label="Player icon">
+          <svg
+            class="samurai-icon"
+            viewBox="0 0 240 240"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+            aria-hidden="true"
+          >
+            <path
+              d="M61 104C65 63 88 41 120 41C152 41 175 63 179 104"
+              stroke="currentColor"
+              stroke-width="8"
+              stroke-linecap="round"
+            />
+            <path
+              d="M50 101H190"
+              stroke="currentColor"
+              stroke-width="8"
+              stroke-linecap="round"
+            />
+            <path
+              d="M72 100L91 70"
+              stroke="currentColor"
+              stroke-width="7"
+              stroke-linecap="round"
+            />
+            <path
+              d="M168 100L149 70"
+              stroke="currentColor"
+              stroke-width="7"
+              stroke-linecap="round"
+            />
+            <path
+              d="M82 111V145C82 170 98 190 120 190C142 190 158 170 158 145V111"
+              stroke="currentColor"
+              stroke-width="8"
+              stroke-linejoin="round"
+            />
+            <path
+              d="M95 132H107"
+              stroke="currentColor"
+              stroke-width="7"
+              stroke-linecap="round"
+            />
+            <path
+              d="M133 132H145"
+              stroke="currentColor"
+              stroke-width="7"
+              stroke-linecap="round"
+            />
+            <path
+              d="M104 160H136"
+              stroke="currentColor"
+              stroke-width="7"
+              stroke-linecap="round"
+            />
+            <path
+              d="M82 118L57 132L72 151"
+              stroke="currentColor"
+              stroke-width="7"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            />
+            <path
+              d="M158 118L183 132L168 151"
+              stroke="currentColor"
+              stroke-width="7"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            />
+            <path
+              d="M120 39V21"
+              stroke="currentColor"
+              stroke-width="7"
+              stroke-linecap="round"
+            />
+            <path
+              d="M104 24H136"
+              stroke="currentColor"
+              stroke-width="7"
+              stroke-linecap="round"
+            />
+            <path
+              d="M92 191L76 215"
+              stroke="currentColor"
+              stroke-width="7"
+              stroke-linecap="round"
+            />
+            <path
+              d="M148 191L164 215"
+              stroke="currentColor"
+              stroke-width="7"
+              stroke-linecap="round"
+            />
+          </svg>
+        </div>
+
+        <nav class="game-actions" aria-label="Game menu">
+          <button class="game-button level" type="button">Level Select</button>
+          <button class="game-button shop" type="button">Shop</button>
+          <button class="game-button gems" type="button">Gems</button>
+          <button class="game-button crates" type="button">Crates</button>
+          <button class="game-button abilities" type="button">Abilities</button>
+          <button class="game-button towers" type="button">Towers</button>
+        </nav>
+
+        <div class="bottom-back">
+          <button class="back-button" type="button" id="backButton">
+            <span>Back</span>
+          </button>
+        </div>
+      </div>
     </section>
   </main>
 
   <script>
-    const buttons = document.querySelectorAll("[data-action]");
+    const mainMenu = document.getElementById("mainMenu");
+    const gameMenu = document.getElementById("gameMenu");
+    const playButton = document.getElementById("playButton");
+    const backButton = document.getElementById("backButton");
 
-    buttons.forEach((button) => {
-      button.addEventListener("click", () => {
-        const action = button.dataset.action;
+    function showView(view) {
+      mainMenu.classList.remove("active");
+      gameMenu.classList.remove("active");
 
-        if (action === "play") {
-          console.log("Play selected");
-          // Later: route to level selector / shop hub.
+      view.classList.add("active");
+    }
+
+    playButton.addEventListener("click", () => {
+      showView(gameMenu);
+    });
+
+    backButton.addEventListener("click", () => {
+      showView(mainMenu);
+    });
+
+    function isFullscreen() {
+      return document.fullscreenElement || document.webkitFullscreenElement;
+    }
+
+    async function toggleFullscreen() {
+      try {
+        if (isFullscreen()) {
+          if (document.exitFullscreen) {
+            await document.exitFullscreen();
+          } else if (document.webkitExitFullscreen) {
+            await document.webkitExitFullscreen();
+          }
+          return;
         }
 
-        if (action === "settings") {
-          console.log("Settings selected");
-          // Later: open settings panel.
+        const root = document.documentElement;
+
+        if (root.requestFullscreen) {
+          await root.requestFullscreen();
+        } else if (root.webkitRequestFullscreen) {
+          await root.webkitRequestFullscreen();
         }
-      });
+
+        if (screen.orientation && screen.orientation.lock) {
+          try {
+            await screen.orientation.lock("portrait");
+          } catch (error) {
+            console.log("Portrait lock unavailable on this device/browser.");
+          }
+        }
+      } catch (error) {
+        console.log("Fullscreen unavailable:", error);
+      }
+    }
+
+    let lastTapTime = 0;
+
+    document.addEventListener(
+      "touchend",
+      (event) => {
+        const currentTime = Date.now();
+        const tapLength = currentTime - lastTapTime;
+
+        if (tapLength > 0 && tapLength < 300) {
+          event.preventDefault();
+          toggleFullscreen();
+        }
+
+        lastTapTime = currentTime;
+      },
+      { passive: false }
+    );
+
+    document.addEventListener("dblclick", (event) => {
+      event.preventDefault();
+      toggleFullscreen();
     });
   </script>
 </body>
