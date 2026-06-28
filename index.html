@@ -172,8 +172,6 @@
       flex-direction: column;
     }
 
-    /* MAIN MENU */
-
     .title-wrap {
       margin-top: 20px;
       margin-bottom: clamp(56px, 12svh, 92px);
@@ -278,24 +276,22 @@
       background: linear-gradient(90deg, var(--line-soft), transparent);
     }
 
-    /* GAME MENU */
-
     .status-bar {
       display: grid;
       grid-template-columns: repeat(4, 1fr);
       gap: 8px;
-      margin-bottom: 24px;
+      margin-bottom: 18px;
       color: var(--line);
     }
 
     .status-item {
-      min-height: 48px;
+      min-height: 46px;
       border: 1px solid var(--line-soft);
       border-radius: 13px;
       display: grid;
       place-items: center;
       text-align: center;
-      font-size: clamp(0.68rem, 2.8vw, 0.82rem);
+      font-size: clamp(0.66rem, 2.6vw, 0.8rem);
       font-weight: 800;
       text-transform: uppercase;
       letter-spacing: 0.08em;
@@ -305,12 +301,12 @@
     .samurai-wrap {
       display: grid;
       place-items: center;
-      margin-top: 8px;
-      margin-bottom: 30px;
+      margin-top: 4px;
+      margin-bottom: 18px;
     }
 
     .samurai-icon {
-      width: min(48vw, 210px);
+      width: min(30vw, 128px);
       height: auto;
       color: rgba(255, 255, 255, 0.9);
       filter: drop-shadow(0 0 18px rgba(177, 102, 255, 0.18));
@@ -318,7 +314,7 @@
 
     .game-actions {
       display: grid;
-      gap: 13px;
+      gap: 11px;
       margin-top: 2px;
     }
 
@@ -326,7 +322,7 @@
     .back-button {
       appearance: none;
       width: 100%;
-      min-height: 58px;
+      min-height: 54px;
       border: 2px solid currentColor;
       border-radius: 16px;
       background: transparent;
@@ -335,7 +331,7 @@
       align-items: center;
       justify-content: space-between;
       padding: 0 20px;
-      font-size: clamp(0.92rem, 3.7vw, 1.12rem);
+      font-size: clamp(0.9rem, 3.5vw, 1.08rem);
       font-weight: 850;
       letter-spacing: 0.095em;
       text-transform: uppercase;
@@ -381,12 +377,12 @@
 
     .bottom-back {
       margin-top: auto;
-      padding-top: 20px;
+      padding-top: 16px;
     }
 
     .back-button {
       color: var(--line);
-      min-height: 54px;
+      min-height: 52px;
     }
 
     .back-button::before {
@@ -404,25 +400,80 @@
     }
 
     @media (max-height: 740px) {
+      .screen {
+        padding: max(18px, env(safe-area-inset-top)) 20px max(18px, env(safe-area-inset-bottom));
+      }
+
       .panel {
         min-height: 88svh;
-        padding: 22px;
+        padding: 20px;
+      }
+
+      .status-bar {
+        margin-bottom: 14px;
+      }
+
+      .status-item {
+        min-height: 42px;
+        font-size: 0.64rem;
       }
 
       .samurai-wrap {
-        margin-bottom: 18px;
+        margin-top: 0;
+        margin-bottom: 12px;
       }
 
       .samurai-icon {
-        width: min(34vw, 150px);
+        width: min(24vw, 96px);
       }
 
       .game-actions {
-        gap: 9px;
+        gap: 8px;
       }
 
       .game-button {
+        min-height: 48px;
+      }
+
+      .bottom-back {
+        padding-top: 12px;
+      }
+
+      .back-button {
         min-height: 50px;
+      }
+    }
+
+    @media (max-height: 660px) {
+      .panel {
+        padding: 18px;
+      }
+
+      .status-item {
+        min-height: 38px;
+        font-size: 0.58rem;
+      }
+
+      .samurai-wrap {
+        margin-bottom: 9px;
+      }
+
+      .samurai-icon {
+        width: min(20vw, 72px);
+      }
+
+      .game-actions {
+        gap: 7px;
+      }
+
+      .game-button {
+        min-height: 43px;
+        font-size: 0.82rem;
+      }
+
+      .back-button {
+        min-height: 46px;
+        font-size: 0.82rem;
       }
     }
 
@@ -444,7 +495,6 @@
       <div class="corner bl"></div>
       <div class="corner br"></div>
 
-      <!-- MAIN MENU -->
       <div class="view active" id="mainMenu">
         <header class="title-wrap">
           <div class="eyebrow">Tower Defense</div>
@@ -463,7 +513,6 @@
         </footer>
       </div>
 
-      <!-- GAME MENU -->
       <div class="view" id="gameMenu">
         <header class="status-bar" aria-label="Player resources">
           <div class="status-item">Tier: I</div>
@@ -588,38 +637,37 @@
   </main>
 
   <script>
-    const mainMenu = document.getElementById("mainMenu");
-    const gameMenu = document.getElementById("gameMenu");
-    const playButton = document.getElementById("playButton");
-    const backButton = document.getElementById("backButton");
+    const mainMenu = document.querySelector("#mainMenu");
+    const gameMenu = document.querySelector("#gameMenu");
+    const playButton = document.querySelector("#playButton");
+    const backButton = document.querySelector("#backButton");
 
-    function showView(view) {
-      mainMenu.classList.remove("active");
+    function openMainMenu() {
+      mainMenu.classList.add("active");
       gameMenu.classList.remove("active");
-
-      view.classList.add("active");
     }
 
-    playButton.addEventListener("click", () => {
-      showView(gameMenu);
-    });
-
-    backButton.addEventListener("click", () => {
-      showView(mainMenu);
-    });
-
-    function isFullscreen() {
-      return document.fullscreenElement || document.webkitFullscreenElement;
+    function openGameMenu() {
+      mainMenu.classList.remove("active");
+      gameMenu.classList.add("active");
     }
+
+    playButton.addEventListener("click", openGameMenu);
+    backButton.addEventListener("click", openMainMenu);
 
     async function toggleFullscreen() {
+      const fullscreenElement =
+        document.fullscreenElement ||
+        document.webkitFullscreenElement;
+
       try {
-        if (isFullscreen()) {
+        if (fullscreenElement) {
           if (document.exitFullscreen) {
             await document.exitFullscreen();
           } else if (document.webkitExitFullscreen) {
             await document.webkitExitFullscreen();
           }
+
           return;
         }
 
@@ -634,34 +682,29 @@
         if (screen.orientation && screen.orientation.lock) {
           try {
             await screen.orientation.lock("portrait");
-          } catch (error) {
-            console.log("Portrait lock unavailable on this device/browser.");
-          }
+          } catch {}
         }
-      } catch (error) {
-        console.log("Fullscreen unavailable:", error);
-      }
+      } catch {}
     }
 
     let lastTapTime = 0;
 
     document.addEventListener(
       "touchend",
-      (event) => {
-        const currentTime = Date.now();
-        const tapLength = currentTime - lastTapTime;
+      function (event) {
+        const now = Date.now();
 
-        if (tapLength > 0 && tapLength < 300) {
+        if (now - lastTapTime < 300) {
           event.preventDefault();
           toggleFullscreen();
         }
 
-        lastTapTime = currentTime;
+        lastTapTime = now;
       },
       { passive: false }
     );
 
-    document.addEventListener("dblclick", (event) => {
+    document.addEventListener("dblclick", function (event) {
       event.preventDefault();
       toggleFullscreen();
     });
