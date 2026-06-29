@@ -217,7 +217,8 @@
     .back-button,
     .level-button,
     .run-button,
-    .modal-button {
+    .modal-button,
+    .tower-popup-button {
       appearance: none;
       border: 2px solid currentColor;
       background: transparent;
@@ -267,7 +268,8 @@
     .back-button:active,
     .level-button:active,
     .run-button:active,
-    .modal-button:active {
+    .modal-button:active,
+    .tower-popup-button:active {
       transform: scale(0.982);
       background: rgba(255, 255, 255, 0.055);
     }
@@ -351,29 +353,12 @@
       height: 10px;
     }
 
-    .game-button.level {
-      color: var(--red);
-    }
-
-    .game-button.shop {
-      color: var(--yellow);
-    }
-
-    .game-button.gems {
-      color: var(--emerald);
-    }
-
-    .game-button.crates {
-      color: var(--gold);
-    }
-
-    .game-button.abilities {
-      color: var(--purple);
-    }
-
-    .game-button.towers {
-      color: var(--gray);
-    }
+    .game-button.level { color: var(--red); }
+    .game-button.shop { color: var(--yellow); }
+    .game-button.gems { color: var(--emerald); }
+    .game-button.crates { color: var(--gold); }
+    .game-button.abilities { color: var(--purple); }
+    .game-button.towers { color: var(--gray); }
 
     .bottom-back {
       margin-top: auto;
@@ -435,25 +420,11 @@
       background: rgba(255, 255, 255, 0.025);
     }
 
-    .level-button.white {
-      color: var(--line);
-    }
-
-    .level-button.green {
-      color: var(--green);
-    }
-
-    .level-button.blue {
-      color: var(--blue);
-    }
-
-    .level-button.purple {
-      color: var(--purple);
-    }
-
-    .level-button.gold {
-      color: var(--gold);
-    }
+    .level-button.white { color: var(--line); }
+    .level-button.green { color: var(--green); }
+    .level-button.blue { color: var(--blue); }
+    .level-button.purple { color: var(--purple); }
+    .level-button.gold { color: var(--gold); }
 
     .level-button.locked {
       opacity: 0.45;
@@ -530,13 +501,80 @@
       backdrop-filter: blur(8px);
     }
 
-    .run-button.abort {
-      color: var(--red);
+    .run-button.abort { color: var(--red); }
+    .run-button.reroll { color: var(--yellow); }
+
+    .play-wave-button {
+      position: absolute;
+      left: 50%;
+      bottom: max(18px, env(safe-area-inset-bottom));
+      translate: -50% 0;
+      width: min(240px, 60vw);
+      min-height: 58px;
+      border-radius: 16px;
+      border: 2px solid currentColor;
+      background: rgba(0, 0, 0, 0.52);
+      color: var(--green);
+      backdrop-filter: blur(8px);
+      font-weight: 950;
+      letter-spacing: 0.13em;
+      text-transform: uppercase;
+      z-index: 24;
     }
 
-    .run-button.reroll {
+    .play-wave-button.paused {
       color: var(--yellow);
     }
+
+    .tower-popup {
+      position: fixed;
+      left: 50%;
+      bottom: max(92px, calc(env(safe-area-inset-bottom) + 92px));
+      translate: -50% 0;
+      width: min(380px, calc(100vw - 34px));
+      border: 2px solid var(--line);
+      border-radius: 22px;
+      padding: 18px;
+      display: none;
+      z-index: 28;
+      background:
+        radial-gradient(circle at 50% 0%, rgba(143, 79, 255, 0.18), transparent 58%),
+        rgba(0, 0, 0, 0.86);
+      backdrop-filter: blur(10px);
+      box-shadow: 0 24px 90px rgba(0, 0, 0, 0.58);
+    }
+
+    .tower-popup.active {
+      display: block;
+    }
+
+    .tower-popup-title {
+      margin-bottom: 14px;
+      color: var(--line);
+      font-size: 0.82rem;
+      font-weight: 950;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+    }
+
+    .tower-popup-grid {
+      display: grid;
+      gap: 10px;
+    }
+
+    .tower-popup-button {
+      width: 100%;
+      min-height: 52px;
+      border-radius: 15px;
+      color: var(--line);
+      font-weight: 900;
+      letter-spacing: 0.09em;
+      text-transform: uppercase;
+    }
+
+    .tower-popup-button.buy { color: var(--green); }
+    .tower-popup-button.upgrade { color: var(--yellow); }
+    .tower-popup-button.recycle { color: var(--red); }
 
     .modal {
       position: fixed;
@@ -599,95 +637,6 @@
       letter-spacing: 0.1em;
       text-transform: uppercase;
     }
-
-    @media (max-height: 740px) {
-      .screen {
-        padding: max(18px, env(safe-area-inset-top)) 20px max(18px, env(safe-area-inset-bottom));
-      }
-
-      .panel {
-        min-height: 88svh;
-        padding: 20px;
-      }
-
-      .status-bar {
-        margin-bottom: 14px;
-      }
-
-      .status-item {
-        min-height: 42px;
-        font-size: 0.64rem;
-      }
-
-      .samurai-wrap {
-        margin-top: 0;
-        margin-bottom: 12px;
-      }
-
-      .samurai-icon {
-        width: min(24vw, 96px);
-      }
-
-      .game-actions {
-        gap: 8px;
-      }
-
-      .game-button {
-        min-height: 48px;
-      }
-
-      .bottom-back {
-        padding-top: 12px;
-      }
-
-      .back-button {
-        min-height: 50px;
-      }
-    }
-
-    @media (max-height: 660px) {
-      .panel {
-        padding: 18px;
-      }
-
-      .status-item {
-        min-height: 38px;
-        font-size: 0.58rem;
-      }
-
-      .samurai-wrap {
-        margin-bottom: 9px;
-      }
-
-      .samurai-icon {
-        width: min(20vw, 72px);
-      }
-
-      .game-actions {
-        gap: 7px;
-      }
-
-      .game-button {
-        min-height: 43px;
-        font-size: 0.82rem;
-      }
-
-      .back-button {
-        min-height: 46px;
-        font-size: 0.82rem;
-      }
-    }
-
-    @media (prefers-reduced-motion: reduce) {
-      .menu-button,
-      .game-button,
-      .back-button,
-      .level-button,
-      .run-button,
-      .modal-button {
-        transition: none;
-      }
-    }
   </style>
 </head>
 
@@ -726,13 +675,7 @@
         </header>
 
         <div class="samurai-wrap" aria-label="Player icon">
-          <svg
-            class="samurai-icon"
-            viewBox="0 0 240 240"
-            fill="none"
-            xmlns="http://www.w3.org/2000/svg"
-            aria-hidden="true"
-          >
+          <svg class="samurai-icon" viewBox="0 0 240 240" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
             <path d="M61 104C65 63 88 41 120 41C152 41 175 63 179 104" stroke="currentColor" stroke-width="8" stroke-linecap="round" />
             <path d="M50 101H190" stroke="currentColor" stroke-width="8" stroke-linecap="round" />
             <path d="M72 100L91 70" stroke="currentColor" stroke-width="7" stroke-linecap="round" />
@@ -788,7 +731,8 @@
     <div class="run-hud">
       <div class="run-info">
         <div class="run-pill">Level 1</div>
-        <div class="run-pill" id="waveDisplay">Wave: 1</div>
+        <div class="run-pill" id="waveDisplay">Wave: 1 / 100</div>
+        <div class="run-pill" id="resourceDisplay">Resources: 30</div>
         <div class="run-pill" id="runLootDisplay">Coins: 0 · Gems: 0</div>
       </div>
 
@@ -796,6 +740,23 @@
         <button class="run-button abort" type="button" id="abortButton" aria-label="Abort run">✕</button>
         <button class="run-button reroll" type="button" id="rerollButton" aria-label="Reroll map">↻</button>
       </div>
+    </div>
+
+    <button class="play-wave-button" type="button" id="playWaveButton">Play</button>
+  </section>
+
+  <section class="tower-popup" id="towerPopup">
+    <div class="tower-popup-title" id="towerPopupTitle">Tower Placement</div>
+
+    <div class="tower-popup-grid" id="placeTowerPanel">
+      <button class="tower-popup-button buy" type="button" id="buyMinigunButton">Place Minigun — 10 Resources</button>
+      <button class="tower-popup-button" type="button" id="cancelTowerButton">Cancel</button>
+    </div>
+
+    <div class="tower-popup-grid" id="towerGuiPanel" style="display:none;">
+      <button class="tower-popup-button upgrade" type="button" id="upgradeTowerButton">Upgrade</button>
+      <button class="tower-popup-button recycle" type="button" id="recycleTowerButton">Recycle</button>
+      <button class="tower-popup-button" type="button" id="closeTowerGuiButton">Close</button>
     </div>
   </section>
 
@@ -821,7 +782,22 @@
       mapWidth: 44,
       mapHeight: 44,
       roadLength: 150,
-      boulderCount: 88
+      boulderCount: 88,
+
+      startingResources: 30,
+      totalWaves: 100,
+      raiderBaseCount: 5,
+      raiderCountPerWave: 2,
+      raiderHealth: 100,
+      raiderSpeedCellsPerSecond: 1,
+      raiderSpawnInterval: 0.4,
+
+      minigunBaseCost: 10,
+      minigunDamage: 10,
+      minigunFireRate: 0.1,
+      minigunRangeCells: 7,
+
+      tapMoveTolerance: 8
     };
 
     const STORAGE_KEY = "defenseCoreSaveV1";
@@ -858,14 +834,29 @@
     const ctx = canvas.getContext("2d");
 
     const waveDisplay = document.querySelector("#waveDisplay");
+    const resourceDisplay = document.querySelector("#resourceDisplay");
     const runLootDisplay = document.querySelector("#runLootDisplay");
     const abortButton = document.querySelector("#abortButton");
     const rerollButton = document.querySelector("#rerollButton");
+    const playWaveButton = document.querySelector("#playWaveButton");
+
+    const towerPopup = document.querySelector("#towerPopup");
+    const towerPopupTitle = document.querySelector("#towerPopupTitle");
+    const placeTowerPanel = document.querySelector("#placeTowerPanel");
+    const towerGuiPanel = document.querySelector("#towerGuiPanel");
+    const buyMinigunButton = document.querySelector("#buyMinigunButton");
+    const cancelTowerButton = document.querySelector("#cancelTowerButton");
+    const upgradeTowerButton = document.querySelector("#upgradeTowerButton");
+    const recycleTowerButton = document.querySelector("#recycleTowerButton");
+    const closeTowerGuiButton = document.querySelector("#closeTowerGuiButton");
 
     const abortModal = document.querySelector("#abortModal");
     const abortCoins = document.querySelector("#abortCoins");
     const abortGems = document.querySelector("#abortGems");
     const abortContinueButton = document.querySelector("#abortContinueButton");
+
+    const minigunImage = new Image();
+    minigunImage.src = "minigun.png";
 
     const map = {
       cols: TUNING.mapWidth,
@@ -882,19 +873,31 @@
       scale: 1
     };
 
-    const drag = {
+    const tap = {
       active: false,
-      id: null,
-      lastX: 0,
-      lastY: 0
+      startX: 0,
+      startY: 0,
+      moved: false
     };
 
     const run = {
       active: false,
       level: 1,
       wave: 1,
+      resources: TUNING.startingResources,
       coins: 0,
-      gems: 0
+      gems: 0,
+      running: false,
+      spawning: false,
+      enemiesToSpawn: 0,
+      spawnTimer: 0,
+      enemies: [],
+      towers: [],
+      selectedCell: null,
+      selectedTower: null,
+      explosions: [],
+      lastTime: 0,
+      animationFrame: null
     };
 
     function loadSave() {
@@ -916,6 +919,14 @@
       coinsDisplay.textContent = `Coins: ${save.coins}`;
       gemsDisplay.textContent = `Gems: ${save.gems}`;
       cratesDisplay.textContent = `Crates: ${save.crates}`;
+    }
+
+    function updateRunDisplay() {
+      waveDisplay.textContent = `Wave: ${run.wave} / ${TUNING.totalWaves}`;
+      resourceDisplay.textContent = `Resources: ${run.resources}`;
+      runLootDisplay.textContent = `Coins: ${run.coins} · Gems: ${run.gems}`;
+      playWaveButton.textContent = run.running ? "Pause" : "Play";
+      playWaveButton.classList.toggle("paused", run.running);
     }
 
     function showView(name) {
@@ -956,32 +967,84 @@
       run.active = true;
       run.level = level;
       run.wave = 1;
+      run.resources = TUNING.startingResources;
       run.coins = 0;
       run.gems = 0;
+      run.running = false;
+      run.spawning = false;
+      run.enemiesToSpawn = 0;
+      run.spawnTimer = 0;
+      run.enemies = [];
+      run.towers = [];
+      run.explosions = [];
+      run.selectedCell = null;
+      run.selectedTower = null;
+      run.lastTime = performance.now();
 
       runView.classList.add("active");
       abortModal.classList.remove("active");
+      closeTowerPopup();
 
       resizeCanvas();
       generateMap();
       resetCamera();
       updateRunDisplay();
-      drawMap();
+      loop(run.lastTime);
     }
 
-    function updateRunDisplay() {
-      waveDisplay.textContent = `Wave: ${run.wave}`;
-      runLootDisplay.textContent = `Coins: ${run.coins} · Gems: ${run.gems}`;
+    function togglePlayPause() {
+      if (!run.active) return;
+
+      run.running = !run.running;
+
+      if (run.running && !run.spawning && run.enemies.length === 0) {
+        beginWave();
+      }
+
+      updateRunDisplay();
+    }
+
+    function beginWave() {
+      if (run.wave > TUNING.totalWaves) return;
+
+      run.spawning = true;
+      run.enemiesToSpawn = TUNING.raiderBaseCount + run.wave * TUNING.raiderCountPerWave;
+      run.spawnTimer = 0;
+    }
+
+    function spawnRaider() {
+      run.enemies.push({
+        type: "raider",
+        progress: 0,
+        health: TUNING.raiderHealth,
+        maxHealth: TUNING.raiderHealth,
+        alive: true,
+        hitFlash: 0,
+        healthBarTimer: 0
+      });
     }
 
     function resetRunLootAndWaves() {
       run.wave = 1;
+      run.resources = TUNING.startingResources;
       run.coins = 0;
       run.gems = 0;
+      run.running = false;
+      run.spawning = false;
+      run.enemiesToSpawn = 0;
+      run.spawnTimer = 0;
+      run.enemies = [];
+      run.towers = [];
+      run.explosions = [];
+      run.selectedCell = null;
+      run.selectedTower = null;
+      closeTowerPopup();
       updateRunDisplay();
     }
 
     function abortRun() {
+      run.running = false;
+      updateRunDisplay();
       abortCoins.textContent = `Coins Made: ${run.coins}`;
       abortGems.textContent = `Gems Made: ${run.gems}`;
       abortModal.classList.add("active");
@@ -991,6 +1054,12 @@
       run.active = false;
       runView.classList.remove("active");
       abortModal.classList.remove("active");
+      closeTowerPopup();
+
+      if (run.animationFrame) {
+        cancelAnimationFrame(run.animationFrame);
+      }
+
       showView("gameMenu");
     }
 
@@ -1012,6 +1081,340 @@
       camera.scale = Math.max(0.52, Math.min(fitX, fitY) * 1.15);
       camera.x = (window.innerWidth - mapWidth * camera.scale) / 2;
       camera.y = (window.innerHeight - mapHeight * camera.scale) / 2;
+    }
+
+    function screenToGrid(clientX, clientY) {
+      const worldX = (clientX - camera.x) / camera.scale;
+      const worldY = (clientY - camera.y) / camera.scale;
+
+      return {
+        x: Math.floor(worldX / map.cell),
+        y: Math.floor(worldY / map.cell)
+      };
+    }
+
+    function gridToScreen(x, y) {
+      return {
+        x: camera.x + x * map.cell * camera.scale,
+        y: camera.y + y * map.cell * camera.scale
+      };
+    }
+
+    function getTowerAtCell(x, y) {
+      return run.towers.find((tower) => (
+        x >= tower.x &&
+        x < tower.x + 2 &&
+        y >= tower.y &&
+        y < tower.y + 2
+      ));
+    }
+
+    function handleMapTap(clientX, clientY) {
+      const cell = screenToGrid(clientX, clientY);
+
+      const tower = getTowerAtCell(cell.x, cell.y);
+      if (tower) {
+        openTowerGui(tower);
+        return;
+      }
+
+      const area = normalize2x2Selection(cell.x, cell.y);
+
+      if (!canPlace2x2(area.x, area.y)) {
+        run.selectedCell = null;
+        closeTowerPopup();
+        drawMap();
+        return;
+      }
+
+      if (
+        run.selectedCell &&
+        run.selectedCell.x === area.x &&
+        run.selectedCell.y === area.y
+      ) {
+        openPlacementPopup(area);
+      } else {
+        run.selectedCell = area;
+        run.selectedTower = null;
+        closeTowerPopup(false);
+      }
+
+      drawMap();
+    }
+
+    function normalize2x2Selection(x, y) {
+      return {
+        x: clamp(x, 0, map.cols - 2),
+        y: clamp(y, 0, map.rows - 2)
+      };
+    }
+
+    function canPlace2x2(x, y) {
+      if (x < 0 || y < 0 || x + 1 >= map.cols || y + 1 >= map.rows) {
+        return false;
+      }
+
+      if (run.towers.some((tower) => rectsOverlap(x, y, 2, 2, tower.x, tower.y, 2, 2))) {
+        return false;
+      }
+
+      for (let yy = y - 1; yy <= y + 2; yy++) {
+        for (let xx = x - 1; xx <= x + 2; xx++) {
+          if (xx < 0 || yy < 0 || xx >= map.cols || yy >= map.rows) continue;
+          if (map.pathKeys.has(`${xx},${yy}`)) return false;
+          if (boulderAtCell(xx, yy)) return false;
+        }
+      }
+
+      return true;
+    }
+
+    function openPlacementPopup(area) {
+      run.selectedCell = area;
+      run.selectedTower = null;
+
+      towerPopupTitle.textContent = "Tower Placement";
+      buyMinigunButton.textContent = `Place Minigun — ${TUNING.minigunBaseCost} Resources`;
+      placeTowerPanel.style.display = "grid";
+      towerGuiPanel.style.display = "none";
+      towerPopup.classList.add("active");
+    }
+
+    function openTowerGui(tower) {
+      run.selectedTower = tower;
+      run.selectedCell = null;
+
+      const nextCost = getTowerUpgradeCost(tower);
+      const refund = getTowerRecycleValue(tower);
+
+      towerPopupTitle.textContent = `Minigun · Tier ${tower.tier}`;
+      upgradeTowerButton.textContent = tower.tier >= 5
+        ? "Max Tier"
+        : `Upgrade — ${nextCost} Resources`;
+      recycleTowerButton.textContent = `Recycle — +${refund} Resources`;
+
+      placeTowerPanel.style.display = "none";
+      towerGuiPanel.style.display = "grid";
+      towerPopup.classList.add("active");
+
+      drawMap();
+    }
+
+    function closeTowerPopup(clearSelection = true) {
+      towerPopup.classList.remove("active");
+
+      if (clearSelection) {
+        run.selectedCell = null;
+        run.selectedTower = null;
+        drawMap();
+      }
+    }
+
+    function placeMinigun() {
+      if (!run.selectedCell) return;
+      if (run.resources < TUNING.minigunBaseCost) return;
+      if (!canPlace2x2(run.selectedCell.x, run.selectedCell.y)) return;
+
+      run.resources -= TUNING.minigunBaseCost;
+
+      run.towers.push({
+        type: "minigun",
+        x: run.selectedCell.x,
+        y: run.selectedCell.y,
+        tier: 1,
+        spent: TUNING.minigunBaseCost,
+        cooldown: 0,
+        angle: -Math.PI / 2
+      });
+
+      closeTowerPopup();
+      updateRunDisplay();
+      drawMap();
+    }
+
+    function getTowerUpgradeCost(tower) {
+      return TUNING.minigunBaseCost * Math.pow(2, tower.tier);
+    }
+
+    function getTowerRecycleValue(tower) {
+      return Math.floor(tower.spent * 0.5);
+    }
+
+    function upgradeSelectedTower() {
+      const tower = run.selectedTower;
+      if (!tower || tower.tier >= 5) return;
+
+      const cost = getTowerUpgradeCost(tower);
+      if (run.resources < cost) return;
+
+      run.resources -= cost;
+      tower.spent += cost;
+      tower.tier++;
+
+      openTowerGui(tower);
+      updateRunDisplay();
+      drawMap();
+    }
+
+    function recycleSelectedTower() {
+      const tower = run.selectedTower;
+      if (!tower) return;
+
+      run.resources += getTowerRecycleValue(tower);
+      run.towers = run.towers.filter((item) => item !== tower);
+
+      closeTowerPopup();
+      updateRunDisplay();
+      drawMap();
+    }
+
+    function loop(now) {
+      if (!run.active) return;
+
+      const dt = Math.min(0.05, (now - run.lastTime) / 1000);
+      run.lastTime = now;
+
+      if (run.running) {
+        updateSpawning(dt);
+        updateEnemies(dt);
+        updateTowers(dt);
+        updateExplosions(dt);
+        checkWaveEnd();
+      }
+
+      drawMap();
+      run.animationFrame = requestAnimationFrame(loop);
+    }
+
+    function updateSpawning(dt) {
+      if (!run.spawning) return;
+
+      run.spawnTimer -= dt;
+
+      while (run.spawnTimer <= 0 && run.enemiesToSpawn > 0) {
+        spawnRaider();
+        run.enemiesToSpawn--;
+        run.spawnTimer += TUNING.raiderSpawnInterval;
+      }
+
+      if (run.enemiesToSpawn <= 0) {
+        run.spawning = false;
+      }
+    }
+
+    function updateEnemies(dt) {
+      for (const enemy of run.enemies) {
+        if (!enemy.alive) continue;
+
+        enemy.progress += TUNING.raiderSpeedCellsPerSecond * dt;
+        enemy.hitFlash = Math.max(0, enemy.hitFlash - dt);
+        enemy.healthBarTimer = Math.max(0, enemy.healthBarTimer - dt);
+
+        if (enemy.progress >= map.path.length - 1) {
+          enemy.alive = false;
+        }
+      }
+
+      run.enemies = run.enemies.filter((enemy) => enemy.alive);
+    }
+
+    function updateTowers(dt) {
+      for (const tower of run.towers) {
+        tower.cooldown -= dt;
+
+        if (tower.cooldown > 0) continue;
+
+        const target = findTowerTarget(tower);
+        if (!target) continue;
+
+        const towerCenter = getTowerCenter(tower);
+        const targetPos = getEnemyPosition(target);
+
+        tower.angle = Math.atan2(targetPos.y - towerCenter.y, targetPos.x - towerCenter.x);
+
+        target.health -= TUNING.minigunDamage;
+        target.healthBarTimer = 2;
+        target.hitFlash = 0.08;
+
+        tower.cooldown = TUNING.minigunFireRate;
+
+        if (target.health <= 0) {
+          killEnemy(target);
+        }
+      }
+    }
+
+    function findTowerTarget(tower) {
+      const center = getTowerCenter(tower);
+      const range = TUNING.minigunRangeCells * map.cell;
+      let best = null;
+      let bestProgress = -Infinity;
+
+      for (const enemy of run.enemies) {
+        const pos = getEnemyPosition(enemy);
+        const dist = Math.hypot(pos.x - center.x, pos.y - center.y);
+
+        if (dist <= range && enemy.progress > bestProgress) {
+          best = enemy;
+          bestProgress = enemy.progress;
+        }
+      }
+
+      return best;
+    }
+
+    function getTowerCenter(tower) {
+      return {
+        x: (tower.x + 1) * map.cell,
+        y: (tower.y + 1) * map.cell
+      };
+    }
+
+    function getEnemyPosition(enemy) {
+      const index = Math.floor(enemy.progress);
+      const frac = enemy.progress - index;
+      const a = map.path[index] || map.path[0];
+      const b = map.path[index + 1] || a;
+
+      return {
+        x: a.x + (b.x - a.x) * frac,
+        y: a.y + (b.y - a.y) * frac
+      };
+    }
+
+    function killEnemy(enemy) {
+      enemy.alive = false;
+      run.resources += 1;
+
+      const pos = getEnemyPosition(enemy);
+      run.explosions.push({
+        x: pos.x,
+        y: pos.y,
+        age: 0,
+        life: 0.32
+      });
+
+      updateRunDisplay();
+    }
+
+    function updateExplosions(dt) {
+      for (const explosion of run.explosions) {
+        explosion.age += dt;
+      }
+
+      run.explosions = run.explosions.filter((explosion) => explosion.age < explosion.life);
+    }
+
+    function checkWaveEnd() {
+      if (run.spawning || run.enemies.length > 0) return;
+
+      run.running = false;
+
+      if (run.wave < TUNING.totalWaves) {
+        run.wave++;
+      }
+
+      updateRunDisplay();
     }
 
     function syncMapTuning() {
@@ -1294,6 +1697,10 @@
       drawBoulders();
       drawRoadCells();
       drawPathLine();
+      drawPlacementSelection();
+      drawTowers();
+      drawEnemies();
+      drawExplosions();
       drawStartEnd();
 
       ctx.restore();
@@ -1371,6 +1778,143 @@
       });
     }
 
+    function drawPlacementSelection() {
+      if (!run.selectedCell) return;
+
+      const x = run.selectedCell.x * map.cell;
+      const y = run.selectedCell.y * map.cell;
+      const size = map.cell * 2;
+
+      ctx.fillStyle = "rgba(255, 255, 255, 0.07)";
+      ctx.fillRect(x, y, size, size);
+
+      ctx.strokeStyle = "rgba(255, 255, 255, 0.9)";
+      ctx.lineWidth = 2;
+      ctx.strokeRect(x + 2, y + 2, size - 4, size - 4);
+    }
+
+    function drawTowers() {
+      for (const tower of run.towers) {
+        const center = getTowerCenter(tower);
+        const size = map.cell * 2.15;
+        const color = getTierColor(tower.tier);
+
+        ctx.save();
+        ctx.translate(center.x, center.y);
+        ctx.rotate(tower.angle || -Math.PI / 2);
+
+        if (minigunImage.complete && minigunImage.naturalWidth > 0) {
+          ctx.filter = getTierFilter(tower.tier);
+          ctx.drawImage(minigunImage, -size / 2, -size / 2, size, size);
+          ctx.filter = "none";
+        } else {
+          drawFallbackMinigun(color, size);
+        }
+
+        ctx.restore();
+
+        ctx.strokeStyle = color;
+        ctx.lineWidth = 2;
+        ctx.strokeRect(tower.x * map.cell + 2, tower.y * map.cell + 2, map.cell * 2 - 4, map.cell * 2 - 4);
+      }
+    }
+
+    function drawFallbackMinigun(color, size) {
+      ctx.strokeStyle = color;
+      ctx.lineWidth = 3;
+      ctx.beginPath();
+      ctx.arc(0, 0, size * 0.28, 0, Math.PI * 2);
+      ctx.stroke();
+
+      for (let i = -2; i <= 2; i++) {
+        ctx.beginPath();
+        ctx.moveTo(0, i * 4);
+        ctx.lineTo(size * 0.42, i * 4);
+        ctx.stroke();
+      }
+
+      ctx.strokeRect(-size * 0.22, -size * 0.22, size * 0.28, size * 0.44);
+    }
+
+    function getTierColor(tier) {
+      if (tier === 1) return "rgba(255,255,255,0.95)";
+      if (tier === 2) return "rgba(144,222,120,0.95)";
+      if (tier === 3) return "rgba(96,172,255,0.95)";
+      if (tier === 4) return "rgba(177,102,255,0.95)";
+      return "rgba(255,182,54,0.95)";
+    }
+
+    function getTierFilter(tier) {
+      if (tier === 1) return "none";
+      if (tier === 2) return "sepia(1) saturate(5) hue-rotate(55deg)";
+      if (tier === 3) return "sepia(1) saturate(5) hue-rotate(165deg)";
+      if (tier === 4) return "sepia(1) saturate(6) hue-rotate(235deg)";
+      return "sepia(1) saturate(6) hue-rotate(15deg)";
+    }
+
+    function drawEnemies() {
+      for (const enemy of run.enemies) {
+        const pos = getEnemyPosition(enemy);
+        const flash = enemy.hitFlash > 0;
+
+        ctx.strokeStyle = flash ? "rgba(255, 66, 62, 0.95)" : "rgba(255, 255, 255, 0.92)";
+        ctx.lineWidth = 2;
+
+        ctx.beginPath();
+        ctx.arc(pos.x, pos.y - 8, 4, 0, Math.PI * 2);
+        ctx.stroke();
+
+        ctx.beginPath();
+        ctx.moveTo(pos.x, pos.y - 4);
+        ctx.lineTo(pos.x, pos.y + 10);
+        ctx.moveTo(pos.x - 7, pos.y + 1);
+        ctx.lineTo(pos.x + 7, pos.y + 1);
+        ctx.moveTo(pos.x, pos.y + 10);
+        ctx.lineTo(pos.x - 6, pos.y + 18);
+        ctx.moveTo(pos.x, pos.y + 10);
+        ctx.lineTo(pos.x + 6, pos.y + 18);
+        ctx.stroke();
+
+        if (enemy.healthBarTimer > 0) {
+          const width = 28;
+          const height = 4;
+          const pct = clamp(enemy.health / enemy.maxHealth, 0, 1);
+
+          ctx.fillStyle = "rgba(0, 0, 0, 0.85)";
+          ctx.fillRect(pos.x - width / 2, pos.y - 20, width, height);
+
+          ctx.fillStyle = "rgba(255, 66, 62, 0.95)";
+          ctx.fillRect(pos.x - width / 2, pos.y - 20, width * pct, height);
+
+          ctx.strokeStyle = "rgba(255,255,255,0.75)";
+          ctx.lineWidth = 1;
+          ctx.strokeRect(pos.x - width / 2, pos.y - 20, width, height);
+        }
+      }
+    }
+
+    function drawExplosions() {
+      for (const explosion of run.explosions) {
+        const pct = explosion.age / explosion.life;
+        const radius = 5 + pct * 20;
+        const alpha = 1 - pct;
+
+        ctx.strokeStyle = `rgba(255, 215, 89, ${alpha})`;
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        ctx.arc(explosion.x, explosion.y, radius, 0, Math.PI * 2);
+        ctx.stroke();
+
+        ctx.strokeStyle = `rgba(255, 66, 62, ${alpha * 0.75})`;
+        ctx.beginPath();
+        ctx.moveTo(explosion.x - radius * 0.6, explosion.y);
+        ctx.lineTo(explosion.x + radius * 0.6, explosion.y);
+        ctx.moveTo(explosion.x, explosion.y - radius * 0.6);
+        ctx.lineTo(explosion.x, explosion.y + radius * 0.6);
+        ctx.stroke();
+      }
+    }
+
     function drawStartEnd() {
       const start = map.path[0];
       const end = map.path[map.path.length - 1];
@@ -1421,6 +1965,8 @@
     levelSelectButton.addEventListener("click", () => showView("levelSelector"));
     levelBackButton.addEventListener("click", () => showView("gameMenu"));
 
+    playWaveButton.addEventListener("click", togglePlayPause);
+
     rerollButton.addEventListener("click", () => {
       resetRunLootAndWaves();
       generateMap();
@@ -1431,150 +1977,50 @@
     abortButton.addEventListener("click", abortRun);
     abortContinueButton.addEventListener("click", closeRunToMenu);
 
+    buyMinigunButton.addEventListener("click", placeMinigun);
+    cancelTowerButton.addEventListener("click", () => closeTowerPopup());
+    upgradeTowerButton.addEventListener("click", upgradeSelectedTower);
+    recycleTowerButton.addEventListener("click", recycleSelectedTower);
+    closeTowerGuiButton.addEventListener("click", () => closeTowerPopup());
+
     canvas.addEventListener("pointerdown", (event) => {
-      drag.active = true;
-      drag.id = event.pointerId;
-      drag.lastX = event.clientX;
-      drag.lastY = event.clientY;
-      canvas.setPointerCapture(event.pointerId);
+      tap.active = true;
+      tap.startX = event.clientX;
+      tap.startY = event.clientY;
+      tap.moved = false;
     });
 
     canvas.addEventListener("pointermove", (event) => {
-      if (!drag.active || event.pointerId !== drag.id) return;
+      if (!tap.active) return;
 
-      const dx = event.clientX - drag.lastX;
-      const dy = event.clientY - drag.lastY;
+      const moved = Math.hypot(event.clientX - tap.startX, event.clientY - tap.startY);
 
-      camera.x += dx;
-      camera.y += dy;
-
-      drag.lastX = event.clientX;
-      drag.lastY = event.clientY;
-
-      drawMap();
+      if (moved > TUNING.tapMoveTolerance) {
+        tap.moved = true;
+      }
     });
 
     canvas.addEventListener("pointerup", (event) => {
-      if (event.pointerId !== drag.id) return;
-      drag.active = false;
-      drag.id = null;
+      if (!tap.active) return;
+
+      const moved = Math.hypot(event.clientX - tap.startX, event.clientY - tap.startY);
+      const isCleanTap = !tap.moved && moved <= TUNING.tapMoveTolerance;
+
+      tap.active = false;
+
+      if (isCleanTap) {
+        handleMapTap(event.clientX, event.clientY);
+      }
     });
 
     canvas.addEventListener("pointercancel", () => {
-      drag.active = false;
-      drag.id = null;
+      tap.active = false;
     });
-
-    canvas.addEventListener(
-      "wheel",
-      (event) => {
-        event.preventDefault();
-
-        const oldScale = camera.scale;
-        const zoomFactor = event.deltaY < 0 ? 1.12 : 0.89;
-        const newScale = clamp(oldScale * zoomFactor, 0.35, 3.6);
-
-        const mouseX = event.clientX;
-        const mouseY = event.clientY;
-
-        const worldX = (mouseX - camera.x) / oldScale;
-        const worldY = (mouseY - camera.y) / oldScale;
-
-        camera.scale = newScale;
-        camera.x = mouseX - worldX * newScale;
-        camera.y = mouseY - worldY * newScale;
-
-        drawMap();
-      },
-      { passive: false }
-    );
-
-    let pinch = {
-      active: false,
-      startDistance: 0,
-      startScale: 1,
-      centerX: 0,
-      centerY: 0
-    };
-
-    const activeTouches = new Map();
-
-    canvas.addEventListener(
-      "touchstart",
-      (event) => {
-        for (const touch of event.changedTouches) {
-          activeTouches.set(touch.identifier, {
-            x: touch.clientX,
-            y: touch.clientY
-          });
-        }
-
-        if (activeTouches.size === 2) {
-          const touches = Array.from(activeTouches.values());
-          pinch.active = true;
-          pinch.startDistance = distance(touches[0], touches[1]);
-          pinch.startScale = camera.scale;
-          pinch.centerX = (touches[0].x + touches[1].x) / 2;
-          pinch.centerY = (touches[0].y + touches[1].y) / 2;
-        }
-      },
-      { passive: false }
-    );
-
-    canvas.addEventListener(
-      "touchmove",
-      (event) => {
-        for (const touch of event.changedTouches) {
-          activeTouches.set(touch.identifier, {
-            x: touch.clientX,
-            y: touch.clientY
-          });
-        }
-
-        if (pinch.active && activeTouches.size === 2) {
-          event.preventDefault();
-
-          const touches = Array.from(activeTouches.values());
-          const newDistance = distance(touches[0], touches[1]);
-          const newScale = clamp(pinch.startScale * (newDistance / pinch.startDistance), 0.35, 3.6);
-
-          const oldScale = camera.scale;
-          const centerX = (touches[0].x + touches[1].x) / 2;
-          const centerY = (touches[0].y + touches[1].y) / 2;
-
-          const worldX = (centerX - camera.x) / oldScale;
-          const worldY = (centerY - camera.y) / oldScale;
-
-          camera.scale = newScale;
-          camera.x = centerX - worldX * newScale;
-          camera.y = centerY - worldY * newScale;
-
-          drawMap();
-        }
-      },
-      { passive: false }
-    );
-
-    canvas.addEventListener("touchend", clearTouch);
-    canvas.addEventListener("touchcancel", clearTouch);
-
-    function clearTouch(event) {
-      for (const touch of event.changedTouches) {
-        activeTouches.delete(touch.identifier);
-      }
-
-      if (activeTouches.size < 2) {
-        pinch.active = false;
-      }
-    }
-
-    function distance(a, b) {
-      return Math.hypot(a.x - b.x, a.y - b.y);
-    }
 
     window.addEventListener("resize", () => {
       if (!run.active) return;
       resizeCanvas();
+      resetCamera();
       drawMap();
     });
 
@@ -1633,6 +2079,10 @@
       if (!run.active) {
         toggleFullscreen();
       }
+    });
+
+    minigunImage.addEventListener("load", () => {
+      if (run.active) drawMap();
     });
 
     updateResourceDisplay();
